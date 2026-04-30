@@ -1,0 +1,659 @@
+/* =========================================
+   VARIABLES & GLOBALS
+   ========================================= */
+:root {
+    /* Premium Dark Mode Palette */
+    --color-cream: #FFFEFA;
+    --color-cream-dark: #EBE9E1;
+    --color-navy: #142536;
+    --color-navy-dark: #0A131F;
+    --color-navy-light: #213C58;
+    
+    /* Theme Setup: DARK MODE */
+    --color-dominant: var(--color-navy); 
+    --color-accent: var(--color-cream);   
+    --color-accent-hover: var(--color-cream-dark);
+    
+    --color-bg-main: var(--color-navy);
+    --color-bg-darker: var(--color-navy-dark); 
+    
+    /* Text Colors */
+    --color-text-main: var(--color-cream); 
+    --color-text-muted: var(--color-cream);
+    
+    --color-whatsapp: #25d366;
+    --color-whatsapp-hover: #1eb956;
+    
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-signature: 'Great Vibes', cursive;
+    
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    background-color: var(--color-bg-main);
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-smooth);
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+.container {
+    width: 85%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.text-center { text-align: center; }
+
+/* Typography */
+.section-title {
+    font-size: 2.5rem;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background-color: var(--color-accent);
+}
+
+.text-center .section-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.section {
+    padding: 8rem 0; /* Generous breathing room for Old Money rhythm */
+    margin: 0;
+    position: relative;
+    background-color: var(--color-dominant); 
+    z-index: 10;
+}
+
+.section.flush {
+    padding: 0;
+    margin: 0;
+}
+
+.bg-darker {
+    background-color: var(--color-bg-darker);
+}
+
+/* =========================================
+   BUTTONS & ICONS
+   ========================================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: var(--transition-smooth);
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--color-accent); 
+    color: var(--color-navy); 
+    border: 2px solid var(--color-accent);
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--color-accent);
+    border: 2px solid var(--color-accent);
+}
+
+.btn-outline:hover {
+    background-color: var(--color-accent);
+    color: var(--color-navy);
+}
+
+.btn-whatsapp {
+    background-color: var(--color-accent); 
+    color: var(--color-navy); 
+    border: none;
+    font-size: 1.15rem;
+    padding: 1.25rem 3rem;
+    border-radius: 50px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.btn-whatsapp:hover {
+    background-color: var(--color-accent-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); 
+}
+
+.architrave-btn {
+    background-color: var(--color-bg-main); 
+    color: var(--color-cream); 
+    border-style: solid;
+    border-width: 8px;
+    border-top-color: var(--color-navy-light); 
+    border-left-color: var(--color-navy-light); 
+    border-bottom-color: var(--color-navy-dark); 
+    border-right-color: var(--color-navy-dark); 
+    outline: 1.5px solid var(--color-cream); /* Cream pinstripe */
+    outline-offset: -12px; 
+    padding: 1.5rem 3.5rem; 
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+    box-shadow: 3px 8px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    transition: var(--transition-smooth);
+}
+
+.architrave-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 12px 25px rgba(0, 0, 0, 0.5);
+    color: var(--color-cream);
+    outline-width: 2px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.social-icon {
+    font-size: 2.2rem;
+    color: var(--color-accent);
+    transition: var(--transition-smooth);
+}
+
+.social-icon:hover {
+    color: var(--color-accent-hover);
+    transform: translateY(-3px) scale(1.05);
+}
+
+/* =========================================
+   HEADER / NAVBAR
+   ========================================= */
+.navbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem; /* Aligning slightly down to match visual weight of logo pad */
+}
+
+.logo {
+    display: block;
+    background-color: transparent;
+    padding: 0;
+    margin-top: 20px; /* small margin from the top border */
+    margin-left: 20px; /* small margin from the left border */
+    box-shadow: none;
+    text-decoration: none;
+}
+
+.logo img {
+    height: 140px; 
+    object-fit: contain;
+    background-color: transparent; 
+    border: none;
+    outline: none;
+    box-shadow: none;
+    /* Inverted navy to cream with brightness enhancement and a float effect */
+    filter: invert(1) brightness(1.2) drop-shadow(0px 2px 4px rgba(255, 253, 240, 0.2)); 
+}
+
+/* =========================================
+   TOP SECTION & HERO BANNER
+   ========================================= */
+.top-section {
+    padding: 2rem 0 0 0;
+    background-color: var(--color-navy); /* Exterior wall */
+}
+
+/* The logo and header text merge perfectly into the Dark Navy background */
+.top-section .architrave-frame {
+    background-color: var(--color-bg-main); /* Navy background */
+}
+.top-section .header-text-content h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    margin-bottom: 1rem;
+    color: var(--color-cream);
+    text-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3); 
+}
+.top-section .header-text-content .subtitle {
+    font-size: 1.4rem;
+    color: var(--color-text-muted); 
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* =========================================
+   MEET THE TEAM SECTION
+   ========================================= */
+.team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+}
+
+.team-image-wrapper {
+    position: relative;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.team-img {
+    border-radius: 0;
+    box-shadow: none;
+    filter: none;
+    width: 100%;
+    max-height: 600px;
+    height: auto;
+    object-fit: contain; 
+    display: block;
+    margin: 0 auto;
+}
+
+.team-names {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    letter-spacing: 1px;
+}
+
+.team-content p {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+}
+
+/* =========================================
+   TOP ROW ICONS
+   ========================================= */
+.top-service-icons {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    margin-bottom: 3.5rem;
+}
+
+.top-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color-cream); 
+}
+
+.top-icon-item i {
+    font-size: 1.8rem;
+    margin-bottom: 1.25rem;
+}
+
+.top-icon-item span {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* =========================================
+   SERVICES GRID
+   ========================================= */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    margin-top: 3rem; /* Tighter integration */
+    align-items: stretch; /* Forces equal height across the row */
+}
+
+.service-card {
+    background: var(--color-bg-darker); /* Dark Navy box */
+    padding: 4rem 3rem;
+    text-align: center;
+    transition: var(--transition-smooth);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+    
+    /* Dark Navy Architrave Wall Panel Frame */
+    border-style: solid;
+    border-width: 14px;
+    border-top-color: var(--color-navy-light); 
+    border-left-color: var(--color-navy-light); 
+    border-bottom-color: var(--color-navy-dark); 
+    border-right-color: var(--color-navy-dark); 
+    
+    /* Cream inner layout line */
+    outline: 1px solid var(--color-cream);
+    outline-offset: -20px; 
+    
+    /* Recessed Panel Shadow for Dark Theme */
+    box-shadow: inset 4px 8px 18px rgba(0, 0, 0, 0.2), 5px 12px 25px rgba(0, 0, 0, 0.4);
+}
+
+.service-card:hover {
+    transform: translateY(-6px);
+    /* Dark Theme glow */
+    box-shadow: inset 2px 4px 10px rgba(0, 0, 0, 0.1), 0 20px 45px rgba(0, 0, 0, 0.6);
+    outline: 1.5px solid var(--color-cream); 
+}
+
+.service-icon {
+    font-size: 2.5rem;
+    color: var(--color-cream);
+    margin-bottom: 2rem;
+}
+
+.service-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: var(--color-cream);
+}
+
+.service-card p {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    margin-top: auto; 
+}
+
+/* =========================================
+   DECORATOR'S TOUCH: ARCHITECTURAL FRAMES
+   ========================================= */
+.architrave-frame {
+    border-style: solid;
+    border-width: 18px;
+    border-top-color: var(--color-navy-light); 
+    border-left-color: var(--color-navy-light); 
+    border-bottom-color: var(--color-navy-dark); 
+    border-right-color: var(--color-navy-dark); 
+    outline: 1.5px solid var(--color-cream); /* Cream pinstripe */
+    outline-offset: -28px; 
+    padding: 3.5rem 4rem; 
+    margin: 0 auto; 
+    background-color: var(--color-bg-main);
+    box-shadow: 10px 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.painting-frame {
+    border-style: solid;
+    border-width: 14px;
+    border-top-color: var(--color-navy-light); 
+    border-left-color: var(--color-navy-light); 
+    border-bottom-color: var(--color-navy-dark); 
+    border-right-color: var(--color-navy-dark); 
+    outline: 1px solid var(--color-cream); /* Cream pinstripe */
+    outline-offset: -20px; 
+    padding: 1.5rem; 
+    background-color: var(--color-bg-main);
+    box-shadow: 5px 12px 25px rgba(0, 0, 0, 0.4); 
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.painting-frame:hover {
+    transform: translateY(-5px);
+    box-shadow: 8px 18px 35px rgba(20, 37, 54, 0.09);
+}
+
+/* =========================================
+   PROJECTS GALLERY
+   ========================================= */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    margin-top: 3rem; /* Trimmed gap down */
+}
+
+.project-card {
+    position: relative;
+    border-radius: 0px; 
+    overflow: hidden;
+}
+
+/* The paintings fit inside the card properly */
+.project-card img {
+    width: 100%;
+    height: 360px;
+    object-fit: cover;
+    display: block;
+}
+
+.badge-transformation {
+    position: absolute;
+    top: 40px; /* offset due to padding frame */
+    right: 40px;
+    background: var(--color-accent);
+    color: #fff;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 10;
+}
+
+/* =========================================
+   CONTACT SECTION
+   ========================================= */
+.contact {
+    position: relative;
+    background: linear-gradient(to top, var(--color-bg-darker), var(--color-bg-main));
+    padding: 10rem 0; /* Huge white space */
+}
+
+.contact-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 4.5rem; 
+    color: var(--color-text-muted);
+    font-family: var(--font-heading);
+    font-style: italic;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+.footer {
+    padding: 3rem 0;
+    background-color: var(--color-bg-darker);
+    border-top: 1px solid rgba(20,37,54,0.05);
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+}
+
+/* =========================================
+   ANIMATIONS & RESPONSIVE
+   ========================================= */
+.fade-in-up {
+    animation: fadeInUp 1s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pulse {
+    animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+.reveal-up, .reveal-left, .reveal-right {
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.reveal-stroke {
+    opacity: 0;
+    transform: translateX(-80px); /* Brush stroke starting point */
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1); /* Master decorator fluid curve (fast start, slow smooth settle) */
+}
+
+.reveal-up { transform: translateY(40px); }
+.reveal-left { transform: translateX(-40px); }
+.reveal-right { transform: translateX(40px); }
+
+.reveal-up.active, .reveal-left.active, .reveal-right.active, .reveal-stroke.active {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+@media (max-width: 1024px) {
+    .architrave-frame {
+        padding: 4rem 3rem;
+        border-width: 12px;
+        outline-offset: -18px;
+    }
+    
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .team-grid {
+        grid-template-columns: 1fr;
+        gap: 4rem;
+    }
+    .team-image-wrapper {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Container & Frame Real estate */
+    .container { width: 92%; }
+    
+    .architrave-frame {
+        padding: 2.5rem 1.5rem;
+        border-width: 10px;
+        outline-offset: -16px;
+    }
+
+    /* Safe mobile fallbacks to prevent horizontal clipping jitter */
+    .reveal-stroke {
+        transform: translateY(30px);
+        transition-duration: 0.8s;
+        transition-delay: 0s !important;
+    }
+
+    /* Stacking Grids */
+    .projects-grid, .services-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    /* Typography & Headers */
+    .section-title { font-size: 2.2rem; }
+    .header-text-content h1 { font-size: 2.5rem; }
+    
+    .navbar-inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    /* Logo Scaling */
+    .logo {
+        margin: 0 auto; /* Reset margin and center */
+        padding: 0;
+    }
+    .logo img {
+        height: 120px; /* Reduced for screen balance */
+        margin: 0 auto;
+    }
+
+    /* Top Service Icons Stacking */
+    .top-service-icons {
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    /* Touch Targets (Buttons >= 44px) */
+    .btn, .architrave-btn, .btn-whatsapp {
+        min-height: 52px;
+        display: inline-flex;
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem;
+        font-size: 1.05rem;
+    }
+    
+    .header-actions {
+        position: static;
+        flex-direction: column;
+        width: 100%;
+        gap: 1.5rem;
+    }
+}
