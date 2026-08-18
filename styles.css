@@ -464,11 +464,31 @@ img {
 /* =========================================
    PROJECTS GALLERY
    ========================================= */
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+.portfolio-slider-wrapper {
+    position: relative;
+    width: 100%;
+    margin-top: 3rem;
+    padding: 0 10px; /* Preserve card shadows on sides */
+}
+
+.portfolio-carousel {
+    display: flex;
     gap: 3rem;
-    margin-top: 3rem; /* Trimmed gap down */
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+    padding: 15px 5px; /* Extra breathing space for shadows */
+    margin: -15px -5px; /* Offset padding to align content */
+}
+
+.portfolio-carousel::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+
+.portfolio-item {
+    flex: 0 0 calc(33.333% - 2rem); /* 3 items per screen accounting for gaps */
+    scroll-snap-align: start;
 }
 
 .project-card {
@@ -483,6 +503,46 @@ img {
     height: 360px;
     object-fit: cover;
     display: block;
+}
+
+.carousel-nav-btn {
+    background-color: var(--color-accent);
+    color: var(--color-navy);
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: var(--transition-smooth);
+}
+
+.carousel-nav-btn:hover {
+    background-color: var(--color-accent-hover);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-nav-btn.prev {
+    left: -24px;
+}
+
+.carousel-nav-btn.next {
+    right: -24px;
+}
+
+/* Disabled state styling for carousel buttons */
+.carousel-nav-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: translateY(-50%);
 }
 
 .badge-transformation {
@@ -576,8 +636,17 @@ img {
         outline-offset: -18px;
     }
     
-    .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .portfolio-carousel {
+        gap: 2rem;
+    }
+    .portfolio-item {
+        flex: 0 0 calc(50% - 1rem); /* 2 items visible with 2rem gap */
+    }
+    .carousel-nav-btn.prev {
+        left: -12px;
+    }
+    .carousel-nav-btn.next {
+        right: -12px;
     }
     .team-grid {
         grid-template-columns: 1fr;
@@ -607,9 +676,25 @@ img {
     }
 
     /* Stacking Grids */
-    .projects-grid, .services-grid {
+    .services-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
+    }
+    .portfolio-carousel {
+        gap: 1.5rem;
+    }
+    .portfolio-item {
+        flex: 0 0 100%; /* 1 item visible */
+    }
+    .carousel-nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+    .carousel-nav-btn.prev {
+        left: -8px;
+    }
+    .carousel-nav-btn.next {
+        right: -8px;
     }
 
     /* Typography & Headers */

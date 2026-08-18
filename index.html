@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BC Decorators | High Quality Finishes</title>
     <meta name="description" content="High Quality Finishes, Every Single Time. 15+ Years Experience in interior, exterior decorating, wallpapering, and wood restoration.">
-    <link rel="icon" href="public/logo-fixed.jpg" type="image/jpeg">
+    <link rel="icon" href="public/logo%20final.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
         <div class="container architrave-frame text-center" style="margin-bottom: -18px; position: relative; z-index: 2;">
             <header class="navbar-inner" style="margin-bottom: 3.5rem;">
                 <a href="index.html" class="logo">
-                    <img src="public/logo-fixed.jpg" alt="BC Decorators Logo" style="max-height: 120px; width: auto; filter: none !important; display: inline-block;">
+                    <img src="public/logo%20final.png" alt="BC Decorators Logo" style="max-height: 120px; width: auto; filter: none !important; display: inline-block;">
                 </a>
                 <div class="header-actions">
                     <a href="https://www.instagram.com/bc_decorators/" target="_blank" rel="noopener noreferrer" class="social-icon" title="Follow our work on Instagram">
@@ -97,16 +97,42 @@
     <section id="portfolio" class="portfolio section">
         <div class="container">
             <h2 class="section-title text-center reveal-up">Our Portfolio</h2>
-            <div class="projects-grid">
-                <div class="project-card reveal-stroke painting-frame" style="transition-delay: 0.1s;">
-                    <img src="public/Bathroom.png" alt="Recent Decorating Project">
+            <div class="portfolio-slider-wrapper reveal-up">
+                <button class="carousel-nav-btn prev" aria-label="Previous Project" disabled>
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <div class="portfolio-carousel">
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/Bathroom.png" alt="Bathroom Finishes">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/bathroomtransformation.png" alt="Bathroom Transformation">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/Screenshot%202026-03-26%20161644.png" alt="High Quality Finishes">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/pic%201.png" alt="Interior Styling Project 1">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/pic%202.png" alt="Interior Styling Project 2">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/pic%203.png" alt="Interior Styling Project 3">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/pic%204.png" alt="Interior Styling Project 4">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/pic%205.png" alt="Interior Styling Project 5">
+                    </div>
+                    <div class="project-card portfolio-item painting-frame">
+                        <img src="public/pic%206.png" alt="Interior Styling Project 6">
+                    </div>
                 </div>
-                <div class="project-card reveal-stroke painting-frame" style="transition-delay: 0.3s;">
-    <img src="public/bathroomtransformation.png" alt="Decorating Transformation Project">
-</div>
-                <div class="project-card reveal-stroke painting-frame" style="transition-delay: 0.5s;">
-                    <img src="public/Screenshot%202026-03-26%20161644.png" alt="High Quality Finish Project">
-                </div>
+                <button class="carousel-nav-btn next" aria-label="Next Project">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
             
             <div class="text-center reveal-up" style="margin-top: 5rem;">
@@ -134,6 +160,7 @@
     </footer>
 
     <script>
+        // Intersection Observer for scroll animations
         const observerOptions = {
             root: null,
             rootMargin: '0px',
@@ -152,7 +179,50 @@
         document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .reveal-stroke').forEach((el) => {
             observer.observe(el);
         });
+
+        // Portfolio Carousel Functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.querySelector('.portfolio-carousel');
+            const prevBtn = document.querySelector('.carousel-nav-btn.prev');
+            const nextBtn = document.querySelector('.carousel-nav-btn.next');
+            
+            if (carousel && prevBtn && nextBtn) {
+                const updateButtons = () => {
+                    const scrollLeft = carousel.scrollLeft;
+                    const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+                    
+                    // Small tolerance buffer for rounding/zoom levels
+                    prevBtn.disabled = scrollLeft <= 5;
+                    nextBtn.disabled = scrollLeft >= maxScrollLeft - 5;
+                };
+
+                const getScrollAmount = () => {
+                    const items = carousel.querySelectorAll('.portfolio-item');
+                    if (items.length > 0) {
+                        const itemWidth = items[0].offsetWidth;
+                        const style = window.getComputedStyle(carousel);
+                        const gap = parseFloat(style.gap) || 0;
+                        return itemWidth + gap;
+                    }
+                    return carousel.clientWidth;
+                };
+
+                nextBtn.addEventListener('click', () => {
+                    carousel.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+                });
+                
+                prevBtn.addEventListener('click', () => {
+                    carousel.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+                });
+
+                // Check button state on scroll, load and resize
+                carousel.addEventListener('scroll', updateButtons);
+                window.addEventListener('resize', updateButtons);
+                
+                // Set initial state after load
+                setTimeout(updateButtons, 100);
+            }
+        });
     </script>
 </body>
 </html>
- 
