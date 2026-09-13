@@ -4,6 +4,7 @@
   "description": "BC Decorators - High Quality Finishes, Every Single Time.",
   "main": "server.js",
   "scripts": {
+    "build": "echo Build complete",
     "start": "node server.js"
   },
   "keywords": [
