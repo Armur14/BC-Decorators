@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "build": "echo Build complete",
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy": "wrangler deploy"
   },
   "keywords": [
     "decorating",
