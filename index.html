@@ -21,6 +21,7 @@
                     <img src="public/logo%20final.png" alt="BC Decorators Logo" style="max-height: 120px; width: auto; filter: none !important; display: inline-block;">
                 </a>
                 <div class="header-actions">
+                    <a href="#reviews" class="btn btn-outline" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">Reviews</a>
                     <a href="https://www.instagram.com/bc_decorators/" target="_blank" rel="noopener noreferrer" class="social-icon" title="Follow our work on Instagram">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
@@ -143,19 +144,118 @@
         </div>
     </section>
 
+    <!-- Client Reviews Section -->
+    <section id="reviews" class="reviews-section section">
+        <div class="container">
+            <div class="text-center reveal-up" style="margin-bottom: 3.5rem;">
+                <h2 class="section-title">Reviews</h2>
+                <p class="contact-subtitle" style="margin-bottom: 0; font-size: 1.25rem;">Direct feedback from property owners</p>
+            </div>
+
+            <!-- Aggregate Score & Submission CTA Card -->
+            <div class="reviews-summary-card reveal-up">
+                <!-- Left: Overall Rating -->
+                <div class="summary-score-col">
+                    <div class="score-big" id="reviews-average-score">—</div>
+                    <div class="score-stars" id="reviews-average-stars">
+                        <i class="fa-regular fa-star gold-star empty-star"></i>
+                        <i class="fa-regular fa-star gold-star empty-star"></i>
+                        <i class="fa-regular fa-star gold-star empty-star"></i>
+                        <i class="fa-regular fa-star gold-star empty-star"></i>
+                        <i class="fa-regular fa-star gold-star empty-star"></i>
+                    </div>
+                    <div class="score-count" id="reviews-total-count">Be the first to share your experience!</div>
+                    <span class="trust-badge-pill"><i class="fa-solid fa-shield-halved"></i> 100% Genuine Reviews</span>
+                </div>
+
+                <!-- Middle: Rating Distribution Breakdown -->
+                <div class="summary-bars-col" id="reviews-distribution-bars">
+                    <!-- Populated dynamically via reviews.js -->
+                </div>
+
+                <!-- Right: Action / Leave a Review -->
+                <div class="summary-action-col">
+                    <h3>How did we do?</h3>
+                    <p>Your honest review helps other homeowners restore and transform their spaces with complete confidence.</p>
+                    <div class="reviews-cta-actions">
+                        <button type="button" class="btn btn-primary" data-open-modal="modal-leave-review" style="width: 100%;">
+                            <i class="fa-solid fa-pen-nib"></i> Leave a Review
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Sorting Bar -->
+            <div class="reviews-filter-bar reveal-up">
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <label for="filter-rating"><i class="fa-solid fa-filter"></i> Rating:</label>
+                        <select id="filter-rating" class="filter-select">
+                            <option value="all">All Star Ratings</option>
+                            <option value="5">5 Stars Only</option>
+                            <option value="4">4 Stars Only</option>
+                            <option value="3">3 Stars Only</option>
+                            <option value="2">2 Stars Only</option>
+                            <option value="1">1 Star Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-item">
+                    <label for="filter-sort"><i class="fa-solid fa-arrow-down-wide-short"></i> Sort by:</label>
+                    <select id="filter-sort" class="filter-select">
+                        <option value="newest">Newest First</option>
+                        <option value="highest">Highest Rating</option>
+                        <option value="helpful">Most Helpful</option>
+                        <option value="lowest">Lowest Rating</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dynamic Reviews Grid -->
+            <div id="reviews-grid" class="reviews-grid reveal-up">
+                <!-- Dynamically rendered via reviews.js -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="reviews-empty" class="reviews-empty-state" style="display: none;">
+                <i class="fa-regular fa-comment-dots"></i>
+                <h3 style="margin-bottom: 0.5rem; color: var(--color-cream);">No reviews published yet</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">Be the first to share your experience with Barney &amp; Connor!</p>
+                <button type="button" class="btn btn-outline" data-open-modal="modal-leave-review">
+                    <i class="fa-solid fa-pen-nib"></i> Leave the First Review
+                </button>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="reviews-load-more-wrapper">
+                <button type="button" id="reviews-load-more" class="btn btn-outline" style="display: none;">
+                    Load More Reviews
+                </button>
+            </div>
+        </div>
+    </section>
+
     <section id="contact" class="contact section">
         <div class="container text-center reveal-up">
             <h2 class="section-title">Got something in mind?</h2>
             <p class="contact-subtitle">We’d love to help bring it to life!</p>
             <a href="https://wa.me/447851672574" target="_blank" class="btn btn-whatsapp pulse">
-    <i class="fa-brands fa-whatsapp"></i> Message Barney & Connor on WhatsApp
-</a>
+                <i class="fa-brands fa-whatsapp"></i> Message Barney & Connor on WhatsApp
+            </a>
         </div>
     </section>
 
     <footer class="footer">
         <div class="container text-center">
-            <p>&copy; 2026 BC Decorators. All rights reserved.</p>
+            <p style="margin-bottom: 0.75rem;">
+                &copy; 2026 BC Decorators. All rights reserved.
+                <a href="#" data-open-modal="modal-admin-portal" class="admin-discreet-lock" title="Staff Portal" style="opacity: 0.22; font-size: 0.72rem; margin-left: 6px; color: inherit; text-decoration: none;"><i class="fa-solid fa-lock"></i></a>
+            </p>
+            <p style="font-size: 0.9rem;">
+                <a href="#reviews" style="margin: 0 10px; opacity: 0.85;">Client Reviews</a> &bull;
+                <a href="#" data-open-modal="modal-leave-review" style="margin: 0 10px; opacity: 0.85;">Leave a Review</a>
+            </p>
         </div>
     </footer>
 
@@ -224,5 +324,152 @@
             }
         });
     </script>
+
+    <!-- Leave a Review Modal -->
+    <div id="modal-leave-review" class="bc-modal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <button type="button" class="modal-close-btn modal-close" aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-header">
+                <h2 class="modal-title">Leave a Review</h2>
+                <p class="modal-subtitle">Share your experience with Barney &amp; Connor at BC Decorators</p>
+            </div>
+
+            <form id="leave-review-form">
+                <!-- Honeypot anti-spam trap -->
+                <div style="display: none !important; opacity: 0; position: absolute; left: -9999px;">
+                    <input type="text" name="website" tabindex="-1" autocomplete="off">
+                </div>
+
+                <!-- Star Rating Picker -->
+                <div class="star-picker-container">
+                    <label style="font-weight: 600; color: var(--color-cream); font-size: 0.9rem;">Your Overall Rating <span class="required" style="color: #ff6b6b;">*</span></label>
+                    <div class="star-picker-stars" id="star-picker">
+                        <span class="star-option" data-value="1" title="1 Star"><i class="fa-solid fa-star"></i></span>
+                        <span class="star-option" data-value="2" title="2 Stars"><i class="fa-solid fa-star"></i></span>
+                        <span class="star-option" data-value="3" title="3 Stars"><i class="fa-solid fa-star"></i></span>
+                        <span class="star-option" data-value="4" title="4 Stars"><i class="fa-solid fa-star"></i></span>
+                        <span class="star-option" data-value="5" title="5 Stars"><i class="fa-solid fa-star"></i></span>
+                    </div>
+                    <div id="star-picker-label" class="star-picker-label">5 Stars — Exceptional Finishes!</div>
+                    <input type="hidden" id="review-rating-input" name="rating" value="5">
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="review-name">Your Full Name <span class="required" style="color: #ff6b6b;">*</span></label>
+                        <input type="text" id="review-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-location">Location / Area</label>
+                        <input type="text" id="review-location" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="review-title">Review Headline <span class="required" style="color: #ff6b6b;">*</span></label>
+                    <input type="text" id="review-title" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="review-body">Your Detailed Review <span class="required" style="color: #ff6b6b;">*</span></label>
+                    <textarea id="review-body" class="form-control" rows="4" placeholder="Tell us about the project, the quality of finish, punctuality, and overall experience..." required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Review
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Client Admin Moderation Modal -->
+    <div id="modal-admin-portal" class="bc-modal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog modal-dialog-large">
+            <button type="button" class="modal-close-btn modal-close" aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Login View -->
+            <div id="admin-login-section" class="admin-login-box">
+                <div class="admin-lock-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h2 class="modal-title">Client Moderation Portal</h2>
+                <p class="modal-subtitle" style="margin-bottom: 2rem;">Barney &amp; Connor admin access to approve, feature, or delete posted reviews</p>
+
+                <form id="admin-login-form">
+                    <div class="form-group" style="text-align: left;">
+                        <label for="admin-passcode">Admin Passcode</label>
+                        <input type="password" id="admin-passcode" class="form-control" placeholder="Enter admin passcode" autocomplete="new-password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fa-solid fa-key"></i> Unlock Moderation Panel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Dashboard View (Shown once unlocked) -->
+            <div id="admin-dashboard-section" style="display: none;">
+                <div class="modal-header" style="text-align: left; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 class="modal-title" style="margin-bottom: 0.2rem;">Review Management Panel</h2>
+                        <p class="modal-subtitle">Filter, moderate, and curate reviews shown on the website</p>
+                    </div>
+                    <button type="button" id="admin-logout-btn" class="btn btn-outline" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Lock &amp; Exit
+                    </button>
+                </div>
+
+                <div class="admin-dashboard-controls">
+                    <div class="admin-tabs">
+                        <button type="button" class="admin-tab-btn active" data-tab="all">
+                            All (<span id="badge-count-all">0</span>)
+                        </button>
+                        <button type="button" class="admin-tab-btn" data-tab="pending">
+                            Pending (<span id="badge-count-pending" class="badge-pill">0</span>)
+                        </button>
+                        <button type="button" class="admin-tab-btn" data-tab="approved">
+                            Approved (<span id="badge-count-approved">0</span>)
+                        </button>
+                        <button type="button" class="admin-tab-btn" data-tab="hidden">
+                            Hidden (<span id="badge-count-hidden">0</span>)
+                        </button>
+                    </div>
+
+                    <div class="admin-top-actions">
+                        <label class="toggle-switch-label" title="When enabled, newly submitted reviews will remain hidden until you click Approve">
+                            <input type="checkbox" id="admin-auto-publish-toggle" checked>
+                            <span>Require Approval Before Publishing</span>
+                        </label>
+                        <button type="button" id="admin-export-btn" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                            <i class="fa-solid fa-download"></i> Backup JSON
+                        </button>
+                    </div>
+                </div>
+
+                <div class="admin-search-wrapper">
+                    <input type="text" id="admin-search-input" class="form-control" placeholder="Search by customer name, location, keyword, or project type...">
+                </div>
+
+                <div id="admin-reviews-table-body" class="admin-reviews-table-body">
+                    <!-- Loaded dynamically via reviews.js -->
+                </div>
+
+                <div id="admin-empty-state" class="reviews-empty-state" style="display: none; padding: 2rem;">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p style="color: var(--color-text-muted); margin-top: 0.5rem;">No reviews found in this view.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Application Script -->
+    <script src="reviews.js"></script>
 </body>
 </html>

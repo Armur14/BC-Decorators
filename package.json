@@ -1,0 +1,17 @@
+{
+  "name": "bc-decorating",
+  "version": "1.0.0",
+  "description": "BC Decorators - High Quality Finishes, Every Single Time.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "decorating",
+    "painting",
+    "restoration",
+    "wallpapering"
+  ],
+  "author": "BC Decorators",
+  "license": "ISC"
+}
