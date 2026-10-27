@@ -208,7 +208,33 @@
     }
 
     if (avgStarsEl) {
-      avgStarsEl.innerHTML = renderStarsHtml(hasReviews ? stats.average : 0);
+      const baseHtml = renderStarsHtml(hasReviews ? stats.average : 0);
+      avgStarsEl.innerHTML = baseHtml;
+      const summaryStars = Array.from(avgStarsEl.querySelectorAll('i'));
+      const originalClasses = summaryStars.map(s => s.className);
+
+      summaryStars.forEach((starIcon, idx) => {
+        const starVal = idx + 1;
+        starIcon.style.cursor = 'pointer';
+        starIcon.title = `Click to leave a ${starVal}-star review`;
+        starIcon.addEventListener('mouseenter', () => {
+          summaryStars.forEach((s, i) => {
+            s.className = i < starVal
+              ? 'fa-solid fa-star gold-star'
+              : 'fa-regular fa-star gold-star empty-star';
+          });
+        });
+        starIcon.addEventListener('click', () => {
+          setStarPickerValue(starVal);
+          openModal('modal-leave-review');
+        });
+      });
+
+      avgStarsEl.onmouseleave = () => {
+        summaryStars.forEach((s, i) => {
+          s.className = originalClasses[i];
+        });
+      };
     }
 
     if (barsContainer) {
@@ -218,6 +244,8 @@
         const pct = hasReviews ? Math.round((count / stats.total) * 100) : 0;
         const barItem = document.createElement('div');
         barItem.className = 'dist-row';
+        barItem.style.cursor = 'pointer';
+        barItem.title = `Filter by ${star} Star reviews`;
         barItem.innerHTML = `
           <div class="dist-label">${star} <i class="fa-solid fa-star gold-star"></i></div>
           <div class="dist-track">
@@ -225,6 +253,15 @@
           </div>
           <div class="dist-count">${count} (${pct}%)</div>
         `;
+        barItem.addEventListener('click', () => {
+          const ratingSelect = document.getElementById('filter-rating');
+          if (ratingSelect) {
+            ratingSelect.value = currentFilterRating === String(star) ? 'all' : String(star);
+            currentFilterRating = ratingSelect.value;
+            visibleCount = 6;
+            renderReviewsGrid();
+          }
+        });
         barsContainer.appendChild(barItem);
       }
     }
@@ -460,6 +497,40 @@
     }, 4500);
   }
 
+  // Update Star Picker value cleanly without destroying child DOM nodes
+  function setStarPickerValue(val) {
+    const starContainer = document.getElementById('star-picker');
+    const labelEl = document.getElementById('star-picker-label');
+    const inputEl = document.getElementById('review-rating-input');
+    if (!starContainer || !inputEl) return;
+
+    const stars = starContainer.querySelectorAll('.star-option');
+    stars.forEach(s => {
+      const starVal = parseInt(s.getAttribute('data-value'), 10);
+      let icon = s.querySelector('i');
+      if (!icon) {
+        icon = document.createElement('i');
+        s.appendChild(icon);
+      }
+      s.classList.remove('hovered');
+      if (starVal <= val) {
+        s.classList.add('selected');
+        s.classList.remove('empty');
+        icon.className = 'fa-solid fa-star';
+      } else {
+        s.classList.remove('selected');
+        s.classList.add('empty');
+        icon.className = 'fa-regular fa-star';
+      }
+    });
+
+    if (labelEl) {
+      labelEl.textContent = STAR_DESCRIPTIONS[val] || `${val} Stars`;
+    }
+    inputEl.value = val;
+    selectedRating = val;
+  }
+
   // Setup Star Picker in Leave a Review Form
   function setupStarPicker() {
     const starContainer = document.getElementById('star-picker');
@@ -469,57 +540,62 @@
 
     const stars = starContainer.querySelectorAll('.star-option');
 
-    function updateStars(val) {
+    function previewStars(hoverVal) {
       stars.forEach(s => {
-        const starVal = parseInt(s.getAttribute('data-value'), 10);
-        if (starVal <= val) {
-          s.classList.add('selected');
+        const val = parseInt(s.getAttribute('data-value'), 10);
+        let icon = s.querySelector('i');
+        if (!icon) {
+          icon = document.createElement('i');
+          s.appendChild(icon);
+        }
+        if (val <= hoverVal) {
+          s.classList.add('hovered');
           s.classList.remove('empty');
-          s.innerHTML = '<i class="fa-solid fa-star"></i>';
+          icon.className = 'fa-solid fa-star';
         } else {
+          s.classList.remove('hovered');
           s.classList.remove('selected');
           s.classList.add('empty');
-          s.innerHTML = '<i class="fa-regular fa-star"></i>';
+          icon.className = 'fa-regular fa-star';
         }
       });
       if (labelEl) {
-        labelEl.textContent = STAR_DESCRIPTIONS[val] || `${val} Stars`;
+        labelEl.textContent = STAR_DESCRIPTIONS[hoverVal] || `${hoverVal} Stars`;
       }
-      inputEl.value = val;
-      selectedRating = val;
     }
 
     stars.forEach(star => {
+      star.setAttribute('role', 'button');
+      star.setAttribute('tabindex', '0');
+
       star.addEventListener('mouseenter', () => {
         const hoverVal = parseInt(star.getAttribute('data-value'), 10);
-        stars.forEach(s => {
-          const val = parseInt(s.getAttribute('data-value'), 10);
-          if (val <= hoverVal) {
-            s.classList.add('hovered');
-            s.innerHTML = '<i class="fa-solid fa-star"></i>';
-          } else {
-            s.classList.remove('hovered');
-            if (val > selectedRating) {
-              s.innerHTML = '<i class="fa-regular fa-star"></i>';
-            }
-          }
-        });
-        if (labelEl) labelEl.textContent = STAR_DESCRIPTIONS[hoverVal];
+        previewStars(hoverVal);
       });
 
-      star.addEventListener('mouseleave', () => {
-        stars.forEach(s => s.classList.remove('hovered'));
-        updateStars(selectedRating);
-      });
-
-      star.addEventListener('click', () => {
+      const selectStar = e => {
+        e.preventDefault();
         const val = parseInt(star.getAttribute('data-value'), 10);
-        updateStars(val);
+        setStarPickerValue(val);
+        star.classList.remove('star-clicked');
+        void star.offsetWidth; // trigger reflow for pop animation
+        star.classList.add('star-clicked');
+      };
+
+      star.addEventListener('click', selectStar);
+      star.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          selectStar(e);
+        }
       });
     });
 
+    starContainer.addEventListener('mouseleave', () => {
+      setStarPickerValue(selectedRating);
+    });
+
     // Default 5 stars
-    updateStars(5);
+    setStarPickerValue(5);
   }
 
   // Setup Review Submission Form
@@ -603,7 +679,7 @@
         if (result && result.success) {
           showToast(result.message, 'success');
           form.reset();
-          setupStarPicker();
+          setStarPickerValue(5);
           closeModal('modal-leave-review');
 
           // Refresh public reviews

@@ -1338,11 +1338,34 @@ body.modal-open {
 .star-option {
     cursor: pointer;
     color: #FFC107;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, color 0.15s ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.15rem;
+}
+
+.star-option i {
+    pointer-events: none;
+}
+
+.star-option.empty {
+    color: rgba(255, 254, 250, 0.28);
+}
+
+.star-option:hover,
+.star-option.hovered {
+    color: #FFC107;
 }
 
 .star-option:hover {
     transform: scale(1.2);
+}
+
+.star-option:active,
+.star-option.star-clicked {
+    transform: scale(0.92);
 }
 
 .star-picker-label {
