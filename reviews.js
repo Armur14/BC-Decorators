@@ -1,15 +1,25 @@
 /**
  * BC Decorators - Interactive Reviews & Client Moderation System
  * Features:
- * - Empty by default (pristine for authentic client submissions)
- * - Dual persistence (REST API with seamless localStorage fallback)
- * - Dynamic review submission with live star picker (no e.g. placeholders)
+ * - Live Cloud Persistence via Supabase (works across Cloudflare, Vercel, and Localhost)
+ * - Automatic fallback to local REST API / localStorage if offline
+ * - Dynamic review submission with live star picker
  * - Clean rating breakdown analytics and star filtering
- * - Discreet Client Admin Portal (in footer / Ctrl+Shift+A) with passcode moderation (Approve, Reject, Feature, Delete)
+ * - Discreet Client Admin Portal (in footer / Ctrl+Shift+A) with server-verified passcode moderation
  */
 
 (function () {
   'use strict';
+
+  // Supabase Cloud Configuration
+  const SUPABASE_URL = 'https://dpbjawnlxbxrnsmbymdu.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwYmphd25seGJ4cm5zbWJ5bWR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMjc0NDgsImV4cCI6MjEwODcwMzQ0OH0.9C6egCtu3UyMmpasa2BIpDYognNsBCC6GlEqYi9MUsE';
+
+  const SUPABASE_HEADERS = {
+    'Content-Type': 'application/json',
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+  };
 
   // Seed data is completely empty so site begins with real reviews only
   const SEED_DATA = {
@@ -18,12 +28,11 @@
   };
 
   const STORAGE_KEY = 'bc_decorators_reviews_v2';
-  // Clear any older dummy data from browser cache
   try {
     localStorage.removeItem('bc_decorators_reviews_v1');
   } catch (e) {}
 
-  let isApiAvailable = null;
+  let backendMode = null; // 'supabase' | 'local_api' | 'local_storage'
   let adminToken = sessionStorage.getItem('bc_admin_token') || null;
 
   // State
@@ -41,6 +50,33 @@
     4: '4 Stars — Very Good Quality',
     5: '5 Stars — Exceptional Finishes!'
   };
+
+  // Helper to call Supabase RPC functions
+  async function supabaseRpc(fnName, params = {}) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, {
+      method: 'POST',
+      headers: SUPABASE_HEADERS,
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      throw new Error(`Supabase RPC ${fnName} failed with status ${res.status}`);
+    }
+    return res.json();
+  }
+
+  // Calculate stats helper
+  function computeStats(approvedReviews) {
+    const total = approvedReviews.length;
+    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    let sum = 0;
+    approvedReviews.forEach(r => {
+      const star = Math.min(5, Math.max(1, Math.round(Number(r.rating) || 5)));
+      distribution[star] = (distribution[star] || 0) + 1;
+      sum += star;
+    });
+    const average = total > 0 ? Number((sum / total).toFixed(1)) : 0;
+    return { average, total, distribution };
+  }
 
   // Local storage helpers
   function getLocalData() {
@@ -62,34 +98,77 @@
     }
   }
 
-  // Check API availability
-  async function checkBackend() {
-    if (isApiAvailable !== null) return isApiAvailable;
+  // Detect active backend ('supabase' -> 'local_api' -> 'local_storage')
+  async function detectBackend() {
+    if (backendMode !== null) return backendMode;
+
+    // 1. Try Supabase first
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/reviews?select=id&limit=1`,
+        { headers: SUPABASE_HEADERS, signal: controller.signal }
+      );
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        backendMode = 'supabase';
+        return backendMode;
+      }
+    } catch (e) {
+      // Supabase not reachable or table not created yet
+    }
+
+    // 2. Try local Node API
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1500);
       const res = await fetch('/api/reviews', { signal: controller.signal });
       clearTimeout(timeoutId);
-      isApiAvailable = res.ok;
-    } catch (e) {
-      isApiAvailable = false;
-    }
-    return isApiAvailable;
+      if (res.ok) {
+        backendMode = 'local_api';
+        return backendMode;
+      }
+    } catch (e) {}
+
+    // 3. Fallback to localStorage
+    backendMode = 'local_storage';
+    return backendMode;
   }
 
   // Load public reviews
   async function fetchPublicReviews() {
-    const hasApi = await checkBackend();
-    if (hasApi) {
+    const mode = await detectBackend();
+
+    if (mode === 'supabase') {
+      try {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/reviews?status=eq.approved&order=featured.desc,date.desc`,
+          { headers: SUPABASE_HEADERS }
+        );
+        if (res.ok) {
+          const approved = await res.json();
+          allPublicReviews = approved || [];
+          return {
+            reviews: allPublicReviews,
+            stats: computeStats(allPublicReviews)
+          };
+        }
+      } catch (err) {
+        console.warn('Supabase fetch error, falling back:', err);
+      }
+    }
+
+    if (mode === 'local_api') {
       try {
         const res = await fetch('/api/reviews');
         const data = await res.json();
         if (data.success) {
           allPublicReviews = data.reviews || [];
-          return { reviews: data.reviews || [], stats: data.stats };
+          return { reviews: allPublicReviews, stats: data.stats };
         }
       } catch (err) {
-        console.warn('API error, falling back to local data', err);
+        console.warn('Local API error, falling back to local data', err);
       }
     }
 
@@ -103,20 +182,9 @@
     });
     allPublicReviews = approved;
 
-    // Calculate stats
-    const total = approved.length;
-    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    let sum = 0;
-    approved.forEach(r => {
-      const star = Math.min(5, Math.max(1, Math.round(Number(r.rating) || 5)));
-      distribution[star] = (distribution[star] || 0) + 1;
-      sum += star;
-    });
-    const average = total > 0 ? Number((sum / total).toFixed(1)) : 0;
-
     return {
       reviews: approved,
-      stats: { average, total, distribution }
+      stats: computeStats(approved)
     };
   }
 
@@ -330,21 +398,26 @@
     const current = parseInt(countEl.textContent, 10) || 0;
     countEl.textContent = current + 1;
 
-    const hasApi = await checkBackend();
-    if (hasApi) {
+    const mode = await detectBackend();
+    if (mode === 'supabase') {
+      try {
+        await supabaseRpc('increment_helpful', { p_id: id });
+      } catch (err) {
+        console.warn('Supabase helpful vote error:', err);
+      }
+    } else if (mode === 'local_api') {
       try {
         await fetch(`/api/reviews/${id}/helpful`, { method: 'POST' });
       } catch (err) {
         console.warn('API error during helpful vote:', err);
       }
-    }
-
-    // Update local copy
-    const local = getLocalData();
-    const found = local.reviews.find(r => r.id === id);
-    if (found) {
-      found.helpful = (found.helpful || 0) + 1;
-      saveLocalData(local);
+    } else {
+      const local = getLocalData();
+      const found = local.reviews.find(r => r.id === id);
+      if (found) {
+        found.helpful = (found.helpful || 0) + 1;
+        saveLocalData(local);
+      }
     }
 
     showToast('Thank you for your feedback!', 'success');
@@ -484,10 +557,18 @@
       }
 
       try {
-        const hasApi = await checkBackend();
+        const mode = await detectBackend();
         let result = null;
 
-        if (hasApi) {
+        if (mode === 'supabase') {
+          result = await supabaseRpc('submit_review', {
+            p_name: payload.name,
+            p_location: payload.location,
+            p_rating: payload.rating,
+            p_title: payload.title,
+            p_body: payload.body
+          });
+        } else if (mode === 'local_api') {
           const res = await fetch('/api/reviews', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -519,10 +600,10 @@
           };
         }
 
-        if (result.success) {
+        if (result && result.success) {
           showToast(result.message, 'success');
           form.reset();
-          setupStarPicker(); // Reset star picker to 5
+          setupStarPicker();
           closeModal('modal-leave-review');
 
           // Refresh public reviews
@@ -530,7 +611,7 @@
           renderStats(fresh.stats);
           renderReviewsGrid();
         } else {
-          showToast(result.error || 'Failed to submit review.', 'error');
+          showToast((result && result.error) || 'Failed to submit review.', 'error');
         }
       } catch (err) {
         console.error('Submission error:', err);
@@ -563,10 +644,25 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
 
-        const hasApi = await checkBackend();
+        const mode = await detectBackend();
         let authed = false;
 
-        if (hasApi) {
+        if (mode === 'supabase') {
+          try {
+            const data = await supabaseRpc('admin_get_reviews', { p_passcode: pass });
+            if (data && data.success) {
+              adminToken = pass;
+              sessionStorage.setItem('bc_admin_token', adminToken);
+              adminReviewsList = data.reviews || [];
+              if (autoPublishToggle && data.settings) {
+                autoPublishToggle.checked = data.settings.requireApproval !== false;
+              }
+              authed = true;
+            }
+          } catch (err) {
+            console.error('Supabase admin login error:', err);
+          }
+        } else if (mode === 'local_api') {
           try {
             const res = await fetch('/api/admin/login', {
               method: 'POST',
@@ -583,16 +679,15 @@
             console.error(err);
           }
         } else {
-          // Fallback static passkey check
           if (pass === 'bcdecor2026') {
-            adminToken = 'local_admin_token';
+            adminToken = pass;
             sessionStorage.setItem('bc_admin_token', adminToken);
             authed = true;
           }
         }
 
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Unlock Moderation Panel';
+        submitBtn.innerHTML = '<i class="fa-solid fa-key"></i> Unlock Moderation Panel';
 
         if (authed) {
           passInput.value = '';
@@ -619,8 +714,18 @@
     if (autoPublishToggle) {
       autoPublishToggle.addEventListener('change', async () => {
         const requireApproval = autoPublishToggle.checked;
-        const hasApi = await checkBackend();
-        if (hasApi) {
+        const mode = await detectBackend();
+
+        if (mode === 'supabase') {
+          try {
+            await supabaseRpc('admin_update_settings', {
+              p_passcode: adminToken,
+              p_require_approval: requireApproval
+            });
+          } catch (e) {
+            console.warn(e);
+          }
+        } else if (mode === 'local_api') {
           try {
             await fetch('/api/admin/settings', {
               method: 'PATCH',
@@ -633,12 +738,12 @@
           } catch (e) {
             console.warn(e);
           }
+        } else {
+          const local = getLocalData();
+          local.settings = local.settings || {};
+          local.settings.requireApproval = requireApproval;
+          saveLocalData(local);
         }
-
-        const local = getLocalData();
-        local.settings = local.settings || {};
-        local.settings.requireApproval = requireApproval;
-        saveLocalData(local);
 
         showToast(
           requireApproval
@@ -702,8 +807,33 @@
 
   // Load all reviews for admin
   async function loadAdminReviews() {
-    const hasApi = await checkBackend();
-    if (hasApi && adminToken) {
+    const mode = await detectBackend();
+
+    if (mode === 'supabase' && adminToken) {
+      try {
+        const data = await supabaseRpc('admin_get_reviews', { p_passcode: adminToken });
+        if (data && data.success) {
+          adminReviewsList = data.reviews || [];
+          const autoPublishToggle = document.getElementById('admin-auto-publish-toggle');
+          if (autoPublishToggle && data.settings) {
+            autoPublishToggle.checked = data.settings.requireApproval !== false;
+          }
+          updateAdminBadges();
+          renderAdminReviewsList();
+          return;
+        } else {
+          // Invalid token stored in session
+          adminToken = null;
+          sessionStorage.removeItem('bc_admin_token');
+          showAdminLogin();
+          return;
+        }
+      } catch (e) {
+        console.warn('Supabase admin load error:', e);
+      }
+    }
+
+    if (mode === 'local_api' && adminToken) {
       try {
         const res = await fetch('/api/admin/reviews', {
           headers: { Authorization: `Bearer ${adminToken}` }
@@ -857,12 +987,21 @@
     const action = btn.getAttribute('data-action');
     if (!id || !action) return;
 
-    const hasApi = await checkBackend();
+    const mode = await detectBackend();
 
     if (action === 'delete') {
       if (!confirm('Are you sure you want to permanently delete this review?')) return;
 
-      if (hasApi && adminToken) {
+      if (mode === 'supabase' && adminToken) {
+        try {
+          await supabaseRpc('admin_delete_review', {
+            p_passcode: adminToken,
+            p_id: id
+          });
+        } catch (err) {
+          console.warn('Supabase delete error:', err);
+        }
+      } else if (mode === 'local_api' && adminToken) {
         try {
           await fetch(`/api/admin/reviews/${id}`, {
             method: 'DELETE',
@@ -871,12 +1010,11 @@
         } catch (err) {
           console.warn(err);
         }
+      } else {
+        const local = getLocalData();
+        local.reviews = (local.reviews || []).filter(r => r.id !== id);
+        saveLocalData(local);
       }
-
-      // Update local storage
-      const local = getLocalData();
-      local.reviews = (local.reviews || []).filter(r => r.id !== id);
-      saveLocalData(local);
 
       adminReviewsList = adminReviewsList.filter(r => r.id !== id);
       updateAdminBadges();
@@ -901,7 +1039,18 @@
       updatePayload = { featured: !currentRev?.featured };
     }
 
-    if (hasApi && adminToken) {
+    if (mode === 'supabase' && adminToken) {
+      try {
+        await supabaseRpc('admin_update_review', {
+          p_passcode: adminToken,
+          p_id: id,
+          p_status: updatePayload.status !== undefined ? updatePayload.status : null,
+          p_featured: updatePayload.featured !== undefined ? updatePayload.featured : null
+        });
+      } catch (err) {
+        console.warn('Supabase update error:', err);
+      }
+    } else if (mode === 'local_api' && adminToken) {
       try {
         await fetch(`/api/admin/reviews/${id}`, {
           method: 'PATCH',
@@ -914,14 +1063,13 @@
       } catch (err) {
         console.warn(err);
       }
-    }
-
-    // Update local data
-    const local = getLocalData();
-    const foundLocal = (local.reviews || []).find(r => r.id === id);
-    if (foundLocal) {
-      Object.assign(foundLocal, updatePayload);
-      saveLocalData(local);
+    } else {
+      const local = getLocalData();
+      const foundLocal = (local.reviews || []).find(r => r.id === id);
+      if (foundLocal) {
+        Object.assign(foundLocal, updatePayload);
+        saveLocalData(local);
+      }
     }
 
     const foundAdmin = adminReviewsList.find(r => r.id === id);
